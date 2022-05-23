@@ -1,20 +1,26 @@
+import logging
+
 from fastapi import FastAPI
 
-import app.price_loader as price_loader
-from app.enums import Format, Printing, QuoteType, Vendor
-from app.models import PriceQuote
+import app.data_loader.price_loader as price_loader
+from app.models import (Format, PriceQuote, Printing, QuoteType, UUIDList,
+                        Vendor)
+
+logging.basicConfig(level=logging.DEBUG)
+logging.info("Just testing")
+
 
 app = FastAPI(redoc_url="/documentation", docs_url=None)
 
 PRICE_FILE = "./data/TestAllPrices.json"
-PRICES = price_loader.price_map()
-
+PRICES = price_loader.price_map(PRICE_FILE)
+PRICE_IDS = list(PRICES.keys())
 
 @app.get(
     "/prices/{mtgjson_id}/{format}/{vendor}/{quote_type}/{printing}",
     response_model=PriceQuote,
 )
-async def price_quote_series(
+async def card_ids(
     mtgjson_id: str,
     format: Format,
     vendor: Vendor,
@@ -44,3 +50,20 @@ async def price_quote_series(
     vendor_prices = format_prices.get(vendor, {})
     retail_prices = vendor_prices.get(quote_type, {})
     return retail_prices.get(printing, {})
+
+
+@app.get(
+    "/ids/",
+    response_model=UUIDList,
+)
+async def card_ids():
+    """
+    All of the card ids in a flat list.
+    
+    ### Example usage:
+    ```bash
+    $ curl <base_url>/ids
+    >>> ['00010d56-fe38-5e35-8aed-518019aa36a5', '0001e0d0-2dcd-5640-aadc-a84765cf5fc9', ..., '0003caab-9ff5-5d1a-bc06-976dd0457f19']
+    ```
+    """
+    return PRICE_IDS

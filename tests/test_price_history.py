@@ -1,9 +1,9 @@
 import random
 import time
 
-from app.enums import Format, Printing, QuoteType, Vendor
+from app.models.enums import Format, Printing, QuoteType, Vendor
 from app.main import PRICES, app
-from app.models import PriceQuote
+from app.models.models import PriceQuote
 from fastapi.testclient import TestClient
 
 PRICES_KEYS = list(PRICES.keys())
@@ -23,10 +23,9 @@ def test_query_card_price():
     assert response.status_code == 200
     assert parsed_price_quote
 
-
 def test_query_parameter_combinations():
     """Test querying various combinations of the query parameters."""
-    requests = 1000
+    requests = min(len(PRICES_KEYS), 1000)
     keys = random.sample(PRICES_KEYS, requests)
 
     for mtgjson_id in keys:
@@ -42,7 +41,7 @@ def test_query_parameter_combinations():
 
 def test_performance():
     """A crude performance test."""
-    requests = 1000
+    requests = min(len(PRICES_KEYS), 1000)
     min_requests_per_second = 100
 
     t0 = time.time()
