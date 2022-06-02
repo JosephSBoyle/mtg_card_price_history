@@ -1,26 +1,28 @@
 import logging
 
 from fastapi import FastAPI
-
 import app.data_loader.price_loader as price_loader
-from app.models import (Format, PriceQuote, Printing, QuoteType, UUIDList,
-                        Vendor)
+from app.models import Format, PriceQuote, Printing, QuoteType, UUIDList, Vendor
 
 logging.basicConfig(level=logging.DEBUG)
-logging.info("Just testing")
 
 
-app = FastAPI(redoc_url="/documentation", docs_url=None)
+app = FastAPI(docs_url="/")
 
 PRICE_FILE = "./data/TestAllPrices.json"
 PRICES = price_loader.price_map(PRICE_FILE)
 PRICE_IDS = list(PRICES.keys())
+FORMATS = [format_.value for format_ in Format]
+VENDORS = [vendor.value for vendor in Vendor]
+QUOTE_TYPES = [quote_type.value for quote_type in QuoteType]
+PRINTINGS = [printing.value for printing in Printing]
+
 
 @app.get(
     "/prices/{mtgjson_id}/{format}/{vendor}/{quote_type}/{printing}",
     response_model=PriceQuote,
 )
-async def card_ids(
+async def card_prices(
     mtgjson_id: str,
     format: Format,
     vendor: Vendor,
@@ -59,7 +61,7 @@ async def card_ids(
 async def card_ids():
     """
     All of the card ids in a flat list.
-    
+
     ### Example usage:
     ```bash
     $ curl <base_url>/ids
@@ -67,3 +69,59 @@ async def card_ids():
     ```
     """
     return PRICE_IDS
+
+
+@app.get("/formats/")
+async def formats():
+    """
+    A list of each of the valid formats
+
+    ### Example usage:
+    ```bash
+    $ curl <base_url>/formats
+    >>> ['paper', 'mtgo']
+    ```
+    """
+    return FORMATS
+
+
+@app.get("/vendors/")
+async def vendors():
+    """
+    A list of all card vendors
+
+    ### Example usage:
+    ```bash
+    $ curl <base_url>/formats
+    >>> ['tcgplayer', 'cardmarket', ...]
+    ```
+    """
+    return FORMATS
+
+
+@app.get("/quote_types/")
+async def quote_types():
+    """
+    A list of of the valid formats
+
+    ### Example usage:
+    ```bash
+    $ curl <base_url>/formats
+    >>> ['retail', 'buylist']
+    ```
+    """
+    return QUOTE_TYPES
+
+
+@app.get("/printings/")
+async def printings():
+    """
+    A list of printing types
+
+    ### Example usage:
+    ```bash
+    $ curl <base_url>/formats
+    >>> ['normal', 'foil']
+    ```
+    """
+    return PRINTINGS
