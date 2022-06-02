@@ -1,5 +1,4 @@
 from app.main import PRICES, app
-from app.models import UUIDList
 from fastapi.testclient import TestClient
 
 

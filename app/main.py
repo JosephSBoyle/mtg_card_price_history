@@ -2,7 +2,7 @@ import logging
 
 from fastapi import FastAPI
 import app.data_loader.price_loader as price_loader
-from app.models import Format, PriceQuote, Printing, QuoteType, UUIDList, Vendor
+from app.models import Format, PriceQuote, Printing, QuoteType, Vendor
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -54,10 +54,7 @@ async def card_prices(
     return retail_prices.get(printing, {})
 
 
-@app.get(
-    "/ids/",
-    response_model=UUIDList,
-)
+@app.get("/ids/")
 async def card_ids():
     """
     All of the card ids in a flat list.

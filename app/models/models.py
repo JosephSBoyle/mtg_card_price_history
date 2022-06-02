@@ -11,7 +11,3 @@ class PriceQuote(BaseModel):
     ```
     """
     __root__: dict[date, condecimal(gt=0, decimal_places=2)]
-
-class UUIDList(BaseModel):
-    """A list of the MTG JSON UUIDs"""
-    __root__: list[str]
