@@ -93,7 +93,7 @@ async def vendors():
     >>> ['tcgplayer', 'cardmarket', ...]
     ```
     """
-    return FORMATS
+    return VENDORS
 
 
 @app.get("/quote_types/")
